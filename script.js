@@ -6,15 +6,23 @@ const form = document.getElementById('form');
 const text = document.getElementById('text');
 const amount = document.getElementById('amount');
 
-const dummyTransactions = [
-  { id: 1, text: 'Flower', amount: -20 },
-  { id: 2, text: 'Salary', amount: 300 },
-  { id: 3, text: 'Book', amount: -10 },
-  { id: 4, text: 'Camera', amount: 150 }
-];
+// const dummyTransactions = [
+//   { id: 1, text: 'Flower', amount: -20 },
+//   { id: 2, text: 'Salary', amount: 300 },
+//   { id: 3, text: 'Book', amount: -10 },
+//   { id: 4, text: 'Camera', amount: 150 }
+// ];
 
-let transactions = dummyTransactions;
+const localStorageTransactions = JSON.parse(localStorage.getItem('transactions'));
+//* localStorage.getItem is a stringify array so we need to parse it into an array by using JSON.parse
 
+
+let transactions = localStorage.getItem('transactions') !== null ? 
+localStorageTransactions : [];
+//* We first check to see if there is anything stored in local storage for transaction by using localStorage.getItem('transactions'); !== null means there is data stored in it. 
+//* `?` is equivalent to `if`. So if True, we want to use localStorageTransaction. 
+//* `:` means else. So if there are no transactions stored in localStorage, then we want to start and empty array, []
+//* To see anything in localStorage, we can go to Application in the developer tool
 
 // Add transactions
 function addTransaction(evt) {
@@ -34,6 +42,8 @@ function addTransaction(evt) {
     addTransactionDOM(transaction);
 
     updateValues();
+
+    updateLocalStorage();
 
     text.value = '';
     amount.value = '';
@@ -97,7 +107,14 @@ function updateValues() {
 function removeTransaction(id) {
   transactions = transactions.filter(transaction => transaction.id !== id);
 
+  updateLocalStorage();
+
   init();
+}
+
+// Update local storage transactions
+function updateLocalStorage() {
+  localStorage.setItem('transactions', JSON.stringify(transactions)); //* Turn the array into a string
 }
 
 // Init app
